@@ -1,5 +1,11 @@
+'''
+Script By:- Vedant Kulkarni
+'''
+
 import csv
+
 class FindS_Algorithm:
+    # Takes a file path input makes it to Find S hypothesis Requires Last Column to be decisive.
     def Get_Hypothesis(self,file):
         try:
             with open(file) as f:
@@ -28,7 +34,8 @@ class FindS_Algorithm:
             print("Make Sure Last Column of CSV is decisive 'Yes' for positive and 'No' for negative")
 
             
-    
+    #Takes Hypothesis and Query as input tells Wheather Query is Positive Example Or Negative.
+    #hypo variable can be passed as instance of Get_Hypo Function Make Sure Query and Sample Hypo Attribs matches.
     def Get_Decision(self,hypo, query):
         try:
             flag = True
