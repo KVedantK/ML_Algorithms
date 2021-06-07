@@ -4,14 +4,22 @@ Script By:- Vedant Kulkarni
 
 import csv
 import math
+from re import L
+class Data_Cleaner:
+    def Make_Even(self,file):
+        with open(file) as f:
+            reader = csv.reader(f)
+            data = list(reader)
+        for i in range(0,len(data)):
+            for j in range(0,len(data[0])):
+                data[i][j] = data[i][j].lower()
+        return data
 
-class FindS_Algorithm:
+class FindS_Algorithm(Data_Cleaner):
     # Takes a file path input makes it to Find S hypothesis Requires Last Column to be decisive.
     def Get_Hypothesis(self,file):
         try:
-            with open(file) as f:
-                reader = csv.reader(f)
-                data = list(reader)
+            data = self.Make_Even(file)
 
             hypo = ['0']*(len(data[0])-1) # creates the hypothesismost specific
             positive_instances = []
@@ -62,14 +70,53 @@ class FindS_Algorithm:
             else:
                 print("Please Check if hypothesis is in standard form {'0' for spicific and '?' for general}")
 
-class Decision_Tree:
+class Decision_Tree(Data_Cleaner):
     def Entropy(self,p,n):
-        return (-(p/(p+n))*math.log((p/(p+n)),2) - (n/(p+n))*math.log((n/(p+n)),2))
-
+        if p == 0:
+            x = 0
+        else:
+            x = -(p/(p+n))*math.log((p/(p+n)),2)
+        
+        if n == 0:
+            y = 0
+        else:
+            y = (n/(p+n))*math.log((n/(p+n)),2)
+        return (x-y)
+    
+    def Attrib_Entropy(self, data):
+        list_attribs = list()
+        list_labels = list()
+        for i in range(0,(len(data[0])-1)):
+            attrib_values = {}
+            labels = []
+            for j in range(0,len(data)):
+                if data[j][i] in attrib_values.keys():
+                    if data[j][(len(data[j])-1)].lower() == 'yes':
+                        attrib_values[data[j][i]][0] += 1 
+                    else:
+                        attrib_values[data[j][i]][1] += 1 
+                else:
+                    labels.append(data[j][i])
+                    if data[j][(len(data[j])-1)].lower() == 'yes':
+                        attrib_values[data[j][i]] = [1,0] 
+                    else:
+                        attrib_values[data[j][i]] = [0,1] 
+            
+            list_attribs.append(attrib_values)
+            list_labels.append(labels)
+        print(list_attribs)
+        print(list_labels)
+        Entropies = {}
+        for i in range(0,len(list_attribs)):
+            for j in list_labels[i]:
+                Entropies[j] = self.Entropy(list_attribs[i][j][0],list_attribs[i][j][1])
+        
+        print(Entropies)
+                
+        
+        
     def Get_Tree(self,file):
-        with open(file) as f:
-            reader = csv.reader(f)
-            data = reader
+        data = self.Make_Even(file)
         positive_instances = []
         negative_instances = []
         for i in data:
@@ -81,5 +128,10 @@ class Decision_Tree:
                 pass
         # Gets Entropy of the dataset
         H_Dataset = self.Entropy(len(positive_instances), len(negative_instances))
+        self.Attrib_Entropy(data)
+Dt = Decision_Tree()
+Dt.Get_Tree('findSdata.csv')
+        
+
 
         
