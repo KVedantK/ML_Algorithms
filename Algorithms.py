@@ -81,8 +81,13 @@ class Decision_Tree(Data_Cleaner):
             y = 0
         else:
             y = (n/(p+n))*math.log((n/(p+n)),2)
-        return (x-y)
-    
+
+        if x-y == 0:
+            return 0
+        else:
+            return (x-y)
+            
+    #returns the attribute column with highest gain starting from 0 as 1st attrib in csv
     def Attrib_Entropy(self, data):
         list_attribs = list()
         list_labels = list()
@@ -104,17 +109,17 @@ class Decision_Tree(Data_Cleaner):
             
             list_attribs.append(attrib_values)
             list_labels.append(labels)
-        print(list_attribs)
-        print(list_labels)
-        Entropies = {}
+        Gains = [] #contains List Of Entropies of each element atttribute wise.
         for i in range(0,len(list_attribs)):
+            sum = 0
             for j in list_labels[i]:
-                Entropies[j] = self.Entropy(list_attribs[i][j][0],list_attribs[i][j][1])
-        
-        print(Entropies)
-                
-        
-        
+                pos_neg = list_attribs[i][j][0]+list_attribs[i][j][1]
+                total = len(data)
+                Entropy = self.Entropy(list_attribs[i][j][0],list_attribs[i][j][1])
+                sum = sum + (((pos_neg/total))*Entropy)
+            Gains.append((H_Dataset-sum))
+        return Gains.index(max(Gains))
+
     def Get_Tree(self,file):
         data = self.Make_Even(file)
         positive_instances = []
@@ -127,8 +132,9 @@ class Decision_Tree(Data_Cleaner):
             else:
                 pass
         # Gets Entropy of the dataset
+        global H_Dataset 
         H_Dataset = self.Entropy(len(positive_instances), len(negative_instances))
-        self.Attrib_Entropy(data)
+        print(self.Attrib_Entropy(data))
 Dt = Decision_Tree()
 Dt.Get_Tree('findSdata.csv')
         
