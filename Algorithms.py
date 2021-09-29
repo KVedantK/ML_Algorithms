@@ -71,6 +71,8 @@ class FindS_Algorithm(Data_Cleaner):
                 print("Please Check if hypothesis is in standard form {'0' for spicific and '?' for general}")
 
 class Decision_Tree(Data_Cleaner):
+    
+    
     def Entropy(self,p,n):
         if p == 0:
             x = 0
@@ -88,7 +90,13 @@ class Decision_Tree(Data_Cleaner):
             return (x-y)
             
     #returns the attribute column with highest gain starting from 0 as 1st attrib in csv
-    def Attrib_Entropy(self, data):
+    #H_Dataset is Total Entropy. 
+    #H_Dataset = self.Entropy(len(positive_instances), len(negative_instances))
+    def Attrib_Entropy(self, file, H_Dataset, Datalabels):
+        data = self.Make_Even(file)
+        
+        # Gets Entropy of the dataset
+        
         list_attribs = list()
         list_labels = list()
         for i in range(0,(len(data[0])-1)):
@@ -117,27 +125,24 @@ class Decision_Tree(Data_Cleaner):
                 total = len(data)
                 Entropy = self.Entropy(list_attribs[i][j][0],list_attribs[i][j][1])
                 sum = sum + (((pos_neg/total))*Entropy)
-            Gains.append((H_Dataset-sum))
-        return Gains.index(max(Gains))
+            Gains.append((H_Dataset-sum)) 
+       
+        return Gains, list_labels
+    
+    def subgains(data, Gains, list_labels):
+        #here we want to take in max gain for eg. outlook here with index 0 in list labels we have all the values stored now make combinations
+        #like sunny&all the values of temp, synny and all values of humidity and get the entropy the max one is next.
+        pass
 
-    def Get_Tree(self,file):
-        data = self.Make_Even(file)
-        positive_instances = []
-        negative_instances = []
-        for i in data:
-            if i[len(i)-1].lower() == 'yes':
-                positive_instances.append(i) # gets a list of positive instances
-            if i[len(i)-1].lower() == 'no':
-                negative_instances.append(i) # gets a list of positive instances
-            else:
-                pass
-        # Gets Entropy of the dataset
-        global H_Dataset 
-        H_Dataset = self.Entropy(len(positive_instances), len(negative_instances))
-        print(self.Attrib_Entropy(data))
-Dt = Decision_Tree()
-Dt.Get_Tree('findSdata.csv')
-        
+D = Decision_Tree()
 
+data = D.Make_Even('findSdata.csv')
+positive_instances = []
+negative_instances = []
+for i in data:
+    if i[len(i)-1].lower() == 'yes':
+        positive_instances.append(i) # gets a list of positive instances
+    if i[len(i)-1].lower() == 'no':
+        negative_instances.append(i) # gets a list of positive instances
 
-        
+print(D.Attrib_Entropy('findSdata.csv',D.Entropy(len(positive_instances), len(negative_instances)), ['outlook', 'temperature', 'humidity', 'wind']))
