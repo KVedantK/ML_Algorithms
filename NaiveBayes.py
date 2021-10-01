@@ -36,6 +36,23 @@ def data_Sorter(data):
                     Sorted_data[data[i][j].lower()] = [0,1]
     return Sorted_data
 
-print(Calculator(Make_Even('findSdata.csv')))
+# Hypothesis in same form as the csv data excluding the decision.
+# outlook, tempreature, humidity, wind.
 
-print(data_Sorter(Make_Even('findSdata.csv')))
+def Get_Classification(h):
+    sorted_data = data_Sorter(Make_Even('findSdata.csv'))
+    Yes, No = Calculator(Make_Even('findSdata.csv'))
+    product_yes = Yes/(Yes+No)
+    product_no = No/(Yes+No)
+    for i in h:
+        product_yes *= ((sorted_data[i.lower()][0]/(sorted_data[i.lower()][0] + sorted_data[i.lower()][1])) * ((sorted_data[i.lower()][0] + sorted_data[i.lower()][1]) / (Yes + No))) / (Yes / (Yes+No))
+        product_no *= ((sorted_data[i.lower()][1]/(sorted_data[i.lower()][0] + sorted_data[i.lower()][1])) * ((sorted_data[i.lower()][0] + sorted_data[i.lower()][1]) / (Yes + No))) / (No / (Yes+No))
+    if product_no > product_yes:
+        return 'No'
+    else:
+        return 'Yes'
+
+
+
+
+
